@@ -24,7 +24,7 @@ function route(message) {
       }
     });
     console.log(userName, amountToAdd);
-  } 
+  }
 }
 
 
