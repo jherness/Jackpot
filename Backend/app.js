@@ -56,9 +56,9 @@ wss.on('connection', (ws) => {
             ws.send(`spinRes:${randomNums[0]}:${randomNums[1]}:${randomNums[2]}`);
           }
           else {
-            randomNum1, randomNum2, randomNum3 = randNumbers()
+            randomNums, randomNums, randomNums = randNumbers()
             console.log(randomNums);
-            calcPrize(randomNum1)
+            calcPrize(randomNums[0])
             ws.send(`addTokens:Admin1:${startTokens}`)
             ws.send(`spinRes:${randomNums[0]}:${randomNums[1]}:${randomNums[2]}`);
           }
