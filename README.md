@@ -1,5 +1,5 @@
 Slot Machine Game (Assignment)
-This project was created as part of a technical assignment for a full-stack position. The task was to develop a slot machine game with a unique twist, leveraging real-time communication between the frontend and backend.
+This project was created as part of a technical assignment. The task was to develop a slot machine game with a unique twist, leveraging real-time communication between the frontend and backend.
 
 Features:
 Slot Machine Game: A basic implementation of a slot machine game with an added twist to make the gameplay more interesting.
