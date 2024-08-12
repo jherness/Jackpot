@@ -41,7 +41,7 @@ const App = () => {
       finalSlot2Ref.current = options[parseInt(slot2, 10)];
       finalSlot3Ref.current = options[parseInt(slot3, 10)];
       creditsRef.current = updatedCredits;
-      
+
       startSpinningSlot1(parseInt(slot1, 10));
 
       // Check if the user has won and update the state
@@ -77,7 +77,7 @@ const App = () => {
   };
 
 
-    /*---------------- Time Out section ----------------*/
+  /*---------------- Time Out section ----------------*/
 
   const startSpinningSlot1 = (slot1Value) => {
     let currentIndex = 0;
@@ -139,9 +139,10 @@ const App = () => {
         style={{ marginTop: '20px', padding: '10px 20px' }}>
         {credits === 0 ? "Game Over :(" : "Play!"}
       </button>
-      {/*Cash Out Btn is visible only after a win. If client reRolls, the opportunity is gone and btn disappears*/}
+      {/*Cash Out Btn is visible only after a win. If client Chooses to play again
+      , the opportunity is gone and btn disappears*/}
       {(hasWon && credits > 0 && !isSpinning) && (
-        <button onClick={cashOut} style={{ marginTop: '20px', padding: '10px 20px' }}>
+        <button onClick={cashOut} style={{ marginLeft: '20px', marginTop: '20px', padding: '10px 20px' }}>
           Cash Out
         </button>
       )}
