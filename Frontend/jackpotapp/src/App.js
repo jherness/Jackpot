@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './SlotTable.css';
+import './App.css';
 
 const App = () => {
   const [isSpinning, setIsSpinning] = useState(false);
@@ -11,8 +11,8 @@ const App = () => {
   const options = ['C', 'L', 'O', 'W'];
 
   // Refs to hold final slot values
-  const finalSlotYRef = useRef('A');
-  const finalSlotZRef = useRef('A');
+  const finalSlot2Ref = useRef('A');
+  const finalSlot3Ref = useRef('A');
 
   useEffect(() => {
     const socket = new WebSocket('ws://localhost:8080');
@@ -37,8 +37,8 @@ const App = () => {
       setSlots([slot1, slot2, slot3]);
       setCredits(parseInt(updatedCredits));
 
-      finalSlotYRef.current = options[parseInt(slot2, 10)];
-      finalSlotZRef.current = options[parseInt(slot3, 10)];
+      finalSlot2Ref.current = options[parseInt(slot2, 10)];
+      finalSlot3Ref.current = options[parseInt(slot3, 10)];
       
       startSpinningSlot1(parseInt(slot1, 10));
 
@@ -95,7 +95,7 @@ const App = () => {
 
     setTimeout(() => {
       clearInterval(block2Interval);
-      updateSlot(1, finalSlotYRef.current);
+      updateSlot(1, finalSlot2Ref.current);
     }, 2000);
 
     let currentIndex3 = 0;
@@ -107,7 +107,7 @@ const App = () => {
     setTimeout(() => {
       clearInterval(block3Interval);
       setIsSpinning(false);
-      updateSlot(2, finalSlotZRef.current);
+      updateSlot(2, finalSlot3Ref.current);
     }, 3000);
   };
 
