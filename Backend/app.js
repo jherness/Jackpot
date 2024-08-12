@@ -1,10 +1,11 @@
 const express = require("express");
 const WebSocket = require('ws');
 const { v4 } = require('uuid');
+const {PORT} = require('./Conf')
 
 const app = express();
-const wss = new WebSocket.Server({ port: 8080 });
-console.log('WebSocket server is running on ws://localhost:8080');
+const wss = new WebSocket.Server({ port: PORT });
+console.log(`WebSocket server is running on ws://localhost:${PORT}`);
 
 const sessions = {}; // Store sessions by session ID
 const userAccounts = {}; // Store user accounts by session ID
@@ -46,16 +47,17 @@ const handleRoll = (ws, sessionId) => {
   const session = sessions[sessionId];
   if (!session) return ws.send('error:Invalid session');
 
-  let randomNums = genRandNumbers(); 
+  let randomNums = [0, 0, 0]//genRandNumbers(); 
   const tokens = session.credits;
+  let reRollFlag = false;
 
   if (randomNums[0] === randomNums[1] && randomNums[1] === randomNums[2]) {
-    calcPrize(session, randomNums[0]);
     if (shouldReroll(tokens)) {
       randomNums = genRandNumbers();
-      calcPrize(session, randomNums[0]);
-      console.log("Unlucky, ReRoll!");
+      reRollFlag = true;
+      console.log("ReRoll!");
     }
+    session.credits += calcPrize(randomNums[0])
   }
   else {session.credits--;}
 
@@ -80,35 +82,31 @@ const handleCashOut = (ws, sessionId) => {
 };
 
 // Determine if a reroll should happen based on credits
-const shouldReroll = (tokens) => {
-  if (tokens >= 60) {
+const shouldReroll = (credits) => {
+  if (credits >= 60) {
     return Math.random() < 0.6;
-  } else if (tokens >= 40) {
+  } else if (credits >= 40) {
     return Math.random() < 0.3;
   }
   return false;
 };
 
 // Calculate the prize based on the rolled number
-const calcPrize = (session, randomNum) => {
+const calcPrize = (randomNum) => {
   switch (randomNum) {
     case 0:
-      session.credits += 10;
-      break;
+      return 10;
     case 1:
-      session.credits += 20;
-      break;
+      return 20;
     case 2:
-      session.credits += 30;
-      break;
+      return 30;
     case 3:
-      session.credits += 40;
-      break;
+      return 40;
   }
 };
 
 // Generate three random numbers for the slot machine
-const genRandNumbers = () => {
+const genRandNumbers = () => {  
   return Array.from({ length: 3 }, () => Math.floor(Math.random() * options.length));
 };
 

@@ -1,23 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {SERVER_URL, PORT} from './Conf';
 import './App.css';
 
+
 const App = () => {
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [sessionId, setSessionId] = useState(null);
-  const [credits, setCredits] = useState(10);
-  const [slots, setSlots] = useState(['X', 'X', 'X']);
-  const [ws, setWs] = useState(null);
+  const [isSpinning, setIsSpinning] = useState(false); // Indicates if the slots are spinning
+  const [sessionId, setSessionId] = useState(null); // Stores the current session ID
+  const [credits, setCredits] = useState(10); // Stores the user's credits
+  const [slots, setSlots] = useState(['X', 'X', 'X']); // Stores the current slot values
+  const [ws, setWs] = useState(null); // Stores WebSocket connection
   const [hasWon, setHasWon] = useState(false); // New state to track if the user has won
+  
+  
+  //Slots options
   const options = ['C', 'L', 'O', 'W'];
 
-  // Refs to hold final slot values
+
+  // Refs to hold final slot values and credits
   const finalSlot2Ref = useRef('X');
   const finalSlot3Ref = useRef('X');
-  const creditsRef = useRef('X');
+  const creditsRef = useRef(0);
 
 
   useEffect(() => {
-    const socket = new WebSocket('ws://localhost:8080');
+    const socket = new WebSocket(SERVER_URL+':'+PORT);
     socket.onmessage = handleServerMessage;
     setWs(socket);
 
@@ -27,9 +33,12 @@ const App = () => {
     };
   }, []);
 
+
   const handleServerMessage = (event) => {
     const message = event.data;
 
+
+    // Handle incoming messages from the server
     if (message.startsWith('session:')) {
       const [, id, initialCredits] = message.split(':');
       setSessionId(id);
