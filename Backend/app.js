@@ -53,36 +53,34 @@ const handleRoll = (ws, sessionId) => {
   if (randomNums[0] === randomNums[1] && randomNums[1] === randomNums[2]) {
     calcPrize(session, randomNums[0]);
 
-    while (shouldReroll(tokens)) {
+    if (shouldReroll(tokens)) {
       randomNums = genRandNumbers();
       calcPrize(session, randomNums[0]);
     }
   }
 
   ws.send(`spinRes:${randomNums.join(':')}:${session.credits}`);
+  //ws.send(`spinRes:1:1:1:${session.credits}`);
   console.log(`spinRes:${randomNums.join(':')}:${session.credits}`);
 };
+
 
 // Handle cash out request
 const handleCashOut = (ws, sessionId) => {
   const session = sessions[sessionId];
   if (!session) return ws.send('error:Invalid session');
-
   const credits = session.credits;
-
   // Transfer credits to the user's account
   userAccounts[sessionId].totalCredits += credits;
-
   // Remove session data
   delete sessions[sessionId];
-
   // Send cash out response
   ws.send(`cashOut:${credits}`);
 
   console.log(`Cash out successful. Credits moved to user account: ${credits}`);
 };
 
-// Determine if a reroll should happen based on tokens
+// Determine if a reroll should happen based on credits
 const shouldReroll = (tokens) => {
   if (tokens >= 60) {
     return Math.random() < 0.6;
