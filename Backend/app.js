@@ -46,7 +46,7 @@ const handleRoll = (ws, sessionId) => {
   const session = sessions[sessionId];
   if (!session) return ws.send('error:Invalid session');
 
-  let randomNums = genRandNumbers();
+  let randomNums = genRandNumbers(); 
   const tokens = session.credits;
 
   if (randomNums[0] === randomNums[1] && randomNums[1] === randomNums[2]) {
@@ -55,13 +55,11 @@ const handleRoll = (ws, sessionId) => {
       randomNums = genRandNumbers();
       calcPrize(session, randomNums[0]);
       console.log("Unlucky, ReRoll!");
-      
     }
   }
   else {session.credits--;}
 
   ws.send(`spinRes:${randomNums.join(':')}:${session.credits}`);
-  //ws.send(`spinRes:1:1:1:${session.credits}`);
   console.log(`spinRes:${randomNums.join(':')}:${session.credits}`);
 };
 

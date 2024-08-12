@@ -11,8 +11,10 @@ const App = () => {
   const options = ['C', 'L', 'O', 'W'];
 
   // Refs to hold final slot values
-  const finalSlot2Ref = useRef('A');
-  const finalSlot3Ref = useRef('A');
+  const finalSlot2Ref = useRef('X');
+  const finalSlot3Ref = useRef('X');
+  const creditsRef = useRef('X');
+
 
   useEffect(() => {
     const socket = new WebSocket('ws://localhost:8080');
@@ -35,10 +37,10 @@ const App = () => {
     } else if (message.startsWith('spinRes:')) {
       const [, slot1, slot2, slot3, updatedCredits] = message.split(':');
       setSlots([slot1, slot2, slot3]);
-      setCredits(parseInt(updatedCredits));
 
       finalSlot2Ref.current = options[parseInt(slot2, 10)];
       finalSlot3Ref.current = options[parseInt(slot3, 10)];
+      creditsRef.current = updatedCredits;
       
       startSpinningSlot1(parseInt(slot1, 10));
 
@@ -50,6 +52,7 @@ const App = () => {
     }
   };
 
+
   const updateSlot = (index, newValue) => {
     setSlots(prevSlots => {
       const updatedSlots = [...prevSlots];
@@ -58,6 +61,7 @@ const App = () => {
     });
   };
 
+
   const rollSlots = () => {
     if (credits <= 0 || isSpinning) return;
     setHasWon(false); // Reset the win state when rolling
@@ -65,11 +69,15 @@ const App = () => {
     ws.send(`roll:${sessionId}`);
   };
 
+
   const cashOut = () => {
     ws.send(`cashout:${sessionId}`);
     setHasWon(false); // Hide the button after cashing out
     setIsSpinning(true)
   };
+
+
+    /*---------------- Time Out section ----------------*/
 
   const startSpinningSlot1 = (slot1Value) => {
     let currentIndex = 0;
@@ -83,6 +91,7 @@ const App = () => {
       updateSlot(0, options[slot1Value]);
     }, 1000);
   };
+
 
   const startSpinning23 = () => {
     setIsSpinning(true);
@@ -108,8 +117,12 @@ const App = () => {
       clearInterval(block3Interval);
       setIsSpinning(false);
       updateSlot(2, finalSlot3Ref.current);
+      //Update the credits after spin animation ends
+      setCredits(parseInt(creditsRef.current));
     }, 3000);
   };
+
+
 
   return (
     <div style={{ textAlign: 'center', padding: '50px' }}>
@@ -124,8 +137,9 @@ const App = () => {
       </table>
       <button onClick={rollSlots} disabled={isSpinning || credits <= 0}
         style={{ marginTop: '20px', padding: '10px 20px' }}>
-        Play!
+        {credits === 0 ? "Game Over :(" : "Play!"}
       </button>
+      {/*Cash Out Btn is visible only after a win. If client reRolls, the opportunity is gone and btn disappears*/}
       {(hasWon && credits > 0 && !isSpinning) && (
         <button onClick={cashOut} style={{ marginTop: '20px', padding: '10px 20px' }}>
           Cash Out
