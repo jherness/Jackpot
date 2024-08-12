@@ -17,6 +17,11 @@ const App = () => {
     const socket = new WebSocket('ws://localhost:8080');
     socket.onmessage = handleServerMessage;
     setWs(socket);
+
+    // Start the game session automatically
+    socket.onopen = () => {
+      socket.send('start');
+    };
   }, []);
 
   const handleServerMessage = (event) => {
@@ -38,10 +43,6 @@ const App = () => {
     } else if (message.startsWith('cashOut:')) {
       alert(`You cashed out with ${message.split(':')[1]} credits!`);
     }
-  };
-
-  const startGame = () => {
-    ws.send('start');
   };
 
   const updateSlot = (index, newValue) => {
@@ -113,7 +114,6 @@ const App = () => {
           </tr>
         </tbody>
       </table>
-      <button onClick={startGame} disabled={isSpinning || credits <= 9}>Start Game</button>
       <button onClick={rollSlots} disabled={isSpinning || credits <= 0}
         style={{ marginTop: '20px', padding: '10px 20px' }}>
         Play!
@@ -125,30 +125,6 @@ const App = () => {
 };
 
 export default App;
-
-/*
-return (
-  <div style={{ textAlign: 'center', padding: '50px' }}>
-    <table style={{ margin: '0 auto', border: '1px solid black' }}>
-      <tbody>
-        <tr>
-          <td className="block">{slots[0]}</td>
-          <td className="block">{slots[1]}</td>
-          <td className="block">{slots[2]}</td>
-        </tr>
-        <tr>
-        </tr>
-      </tbody>
-    </table>
-    <button onClick={handleRoll} disabled={isSpinning || tokens <= 0}
-      style={{ marginTop: '20px', padding: '10px 20px' }}>
-      Play!
-    </button>
-    <button onClick={cashOut}>Cash Out</button>
-    <button onClick={cashOut}>Cash Out</button>
-    <h1>Tokens: {tokens}</h1>
-  </div>
-);*/
 
 
 
