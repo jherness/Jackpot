@@ -73,7 +73,7 @@ const shouldReroll = (credits) => {
 // Calculate the prize based on the rolled number
 const calcPrize = (randomNums) => {
   if (randomNums[0] != randomNums[1] || randomNums[1] != randomNums[2] || randomNums[0] != randomNums[2])
-    return 0;
+    return -1;
   switch (randomNums[0]) {
     case 0:
       return 10;
