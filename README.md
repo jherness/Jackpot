@@ -8,11 +8,9 @@ Node.js Server:
  The backend is powered by a Node.js server, handling game logic and client connections. Initially, I attempted to use a Python server, but due to some integration challenges, I pivoted to Node.js.
 React Frontend:
  The user interface is built using React, providing a dynamic and responsive experience for players.
-SQLite Database: The game data, including player scores, is stored in an SQLite database for persistence.
+
 To-Do/Improvements:
 Design better React GUI,
-Fix Minor Bug:
- Address an issue where data is not updated in the database when the WebSocket connection closes.
 Remove unnecessary code, particularly in the frontend, to improve readability and maintainability.
 Set 'Blocks' as React Functional Component.
 Challenges:
