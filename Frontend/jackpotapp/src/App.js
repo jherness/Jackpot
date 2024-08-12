@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {SERVER_URL, PORT, symbols} from './Conf';
+import { SERVER_URL, PORT, symbols } from './Conf';
 import './App.css';
 
 
@@ -7,23 +7,21 @@ const App = () => {
   const [isSpinning, setIsSpinning] = useState(false); // Indicates if the slots are spinning
   const [sessionId, setSessionId] = useState(null); // Stores the current session ID
   const [credits, setCredits] = useState(10); // Stores the user's credits
-  const [slots, setSlots] = useState(['X', 'X', 'X']); // Stores the current slot values
+  const [slots, setSlots] = useState([symbols[0], symbols[0], symbols[0]]); // Stores the current slot values
   const [ws, setWs] = useState(null); // Stores WebSocket connection
   const [hasWon, setHasWon] = useState(false); // New state to track if the user has won
-  
-  
-  //Slots options
-  const options = symbols
+
+
 
 
   // Refs to hold final slot values and credits
-  const finalSlot2Ref = useRef('X');
-  const finalSlot3Ref = useRef('X');
+  const finalSlot2Ref = useRef(symbols[0]);
+  const finalSlot3Ref = useRef(symbols[0]);
   const creditsRef = useRef(0);
 
 
   useEffect(() => {
-    const socket = new WebSocket(SERVER_URL+':'+PORT);
+    const socket = new WebSocket(SERVER_URL + ':' + PORT);
     socket.onmessage = handleServerMessage;
     setWs(socket);
 
@@ -45,12 +43,13 @@ const App = () => {
       setCredits(parseInt(initialCredits));
     } else if (message.startsWith('spinRes:')) {
       const [, slot1, slot2, slot3, updatedCredits] = message.split(':');
-      setSlots([slot1, slot2, slot3]);
+      setSlots([symbols[slot1], symbols[slot2], symbols[slot3]]);
 
-      finalSlot2Ref.current = options[parseInt(slot2, 10)];
-      finalSlot3Ref.current = options[parseInt(slot3, 10)];
+      finalSlot2Ref.current = symbols[parseInt(slot2, 10)];
+      finalSlot3Ref.current = symbols[parseInt(slot3, 10)];
       creditsRef.current = updatedCredits;
 
+      
       startSpinningSlot1(parseInt(slot1, 10));
 
       // Check if the user has won and update the state
@@ -91,13 +90,13 @@ const App = () => {
   const startSpinningSlot1 = (slot1Value) => {
     let currentIndex = 0;
     const block1Interval = setInterval(() => {
-      updateSlot(0, options[currentIndex]);
-      currentIndex = (currentIndex + 1) % options.length;
+      updateSlot(0, symbols[currentIndex]);
+      currentIndex = (currentIndex + 1) % symbols.length;
     }, 100);
 
     setTimeout(() => {
       clearInterval(block1Interval);
-      updateSlot(0, options[slot1Value]);
+      updateSlot(0, symbols[slot1Value]);
     }, 1000);
   };
 
@@ -107,8 +106,8 @@ const App = () => {
 
     let currentIndex2 = 0;
     const block2Interval = setInterval(() => {
-      updateSlot(1, options[currentIndex2]);
-      currentIndex2 = (currentIndex2 + 1) % options.length;
+      updateSlot(1, symbols[currentIndex2]);
+      currentIndex2 = (currentIndex2 + 1) % symbols.length;
     }, 100);
 
     setTimeout(() => {
@@ -118,8 +117,8 @@ const App = () => {
 
     let currentIndex3 = 0;
     const block3Interval = setInterval(() => {
-      updateSlot(2, options[currentIndex3]);
-      currentIndex3 = (currentIndex3 + 1) % options.length;
+      updateSlot(2, symbols[currentIndex3]);
+      currentIndex3 = (currentIndex3 + 1) % symbols.length;
     }, 100);
 
     setTimeout(() => {
@@ -131,6 +130,14 @@ const App = () => {
     }, 3000);
   };
 
+  
+const symbolsIndex = () => {
+  let res = ``;
+  for(let i = 0; i<symbols.length; i++ ){
+    res += `${symbols[i]} = ${(i + 1)*10}`
+  }
+  return res;
+}
 
 
   return (
@@ -156,12 +163,12 @@ const App = () => {
         </button>
       )}
       <h1>Credits: {credits}</h1>
+      <h3>{symbolsIndex()}</h3>
     </div>
   );
 };
 
 export default App;
-
 
 
 
