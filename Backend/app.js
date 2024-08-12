@@ -48,16 +48,17 @@ const handleRoll = (ws, sessionId) => {
 
   let randomNums = genRandNumbers();
   const tokens = session.credits;
-  session.credits--;
 
   if (randomNums[0] === randomNums[1] && randomNums[1] === randomNums[2]) {
     calcPrize(session, randomNums[0]);
-
     if (shouldReroll(tokens)) {
       randomNums = genRandNumbers();
       calcPrize(session, randomNums[0]);
+      console.log("Unlucky, ReRoll!");
+      
     }
   }
+  else {session.credits--;}
 
   ws.send(`spinRes:${randomNums.join(':')}:${session.credits}`);
   //ws.send(`spinRes:1:1:1:${session.credits}`);
