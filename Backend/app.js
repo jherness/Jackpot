@@ -14,9 +14,9 @@ wss.on('connection', (ws) => {
   const sessionId = sessionDriver.startSession();
   ws.send(`session:${sessionId}:10`); // Send session ID and starting credits
 
+  //message router
   ws.on('message', (data) => {
     const message = data.toString();
-
     if (message.startsWith('roll')) {
       const [_, sessionId] = message.split(':');
       handleRoll(ws, sessionId);
@@ -50,10 +50,10 @@ const handleRoll = (ws, sessionId) => {
 };
 
 
-// Handle cash out request
+// Handle cash out event
 const handleCashOut = (ws, sessionId) => {
   if (!sessionDriver.sessionExists(sessionId)) return ws.send('error:Invalid session');
-
+  const credits = sessionDriver.getSessionCredits(sessionId)
   // Transfer credits to the user's account
   sessionDriver.cashOut(sessionId, credits)
   ws.send(`cashOut:${credits}`);

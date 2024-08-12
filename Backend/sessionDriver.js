@@ -14,9 +14,7 @@ const sessionExists = (sessionId) => { return sessions[sessionId] }
 
 const getSessionCredits = (sessionId) => {
     if (sessions[sessionId]) {
-        let obj = Object.assign({}, sessions[sessionId])
-        console.log(obj.credits + " Here");
-        
+        let obj = Object.assign({}, sessions[sessionId])        
         return obj.credits;
     }
 }
