@@ -1,12 +1,12 @@
 const express = require("express");
 const WebSocket = require('ws');
-const { PORT } = require('./Conf')
+const { PORT, symbols } = require('./Conf')
 const sessionDriver = require('./sessionDriver')
 
 const app = express();
 const wss = new WebSocket.Server({ port: PORT });
 console.log(`WebSocket server is running on ws://localhost:${PORT}`);
-const options = ['C', 'L', 'O', 'W'];
+
 
 // Handle WebSocket connections
 wss.on('connection', (ws) => {
@@ -90,7 +90,7 @@ const calcPrize = (randomNums) => {
 
 // Generate three random numbers for the slot machine
 const genRandNumbers = () => {
-  return Array.from({ length: 3 }, () => Math.floor(Math.random() * options.length));
+  return Array.from({ length: 3 }, () => Math.floor(Math.random() * symbols.length));
 };
 
 module.exports = app;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {SERVER_URL, PORT} from './Conf';
+import {SERVER_URL, PORT, symbols} from './Conf';
 import './App.css';
 
 
@@ -13,7 +13,7 @@ const App = () => {
   
   
   //Slots options
-  const options = ['C', 'L', 'O', 'W'];
+  const options = symbols
 
 
   // Refs to hold final slot values and credits
