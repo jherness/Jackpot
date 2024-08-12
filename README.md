@@ -21,8 +21,7 @@ When receiving messages from the server, it updates the UI based on the session,
 It provides functions to start spinning slots and cash out. The cash-out button is only shown after a win and when the slots are not spinning.
 Slots spin with animations, and credits are updated after the animation completes.
 
-To-Do/Improvements:
-Design better React GUI
+
 Challenges:
 While working on this project, I encountered some difficulties, particularly with the initial Python server setup and its integration with the frontend.
  However, these challenges allowed me to learn and adapt, ultimately leading to a functional Node.js WebSocket server.
