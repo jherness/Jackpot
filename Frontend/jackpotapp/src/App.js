@@ -7,6 +7,151 @@ const App = () => {
   const [credits, setCredits] = useState(10);
   const [slots, setSlots] = useState(['X', 'X', 'X']);
   const [ws, setWs] = useState(null);
+  const [hasWon, setHasWon] = useState(false); // New state to track if the user has won
+  const options = ['C', 'L', 'O', 'W'];
+
+  // Refs to hold final slot values
+  const finalSlotYRef = useRef('A');
+  const finalSlotZRef = useRef('A');
+
+  useEffect(() => {
+    const socket = new WebSocket('ws://localhost:8080');
+    socket.onmessage = handleServerMessage;
+    setWs(socket);
+
+    // Start the game session automatically
+    socket.onopen = () => {
+      socket.send('start');
+    };
+  }, []);
+
+  const handleServerMessage = (event) => {
+    const message = event.data;
+
+    if (message.startsWith('session:')) {
+      const [, id, initialCredits] = message.split(':');
+      setSessionId(id);
+      setCredits(parseInt(initialCredits));
+    } else if (message.startsWith('spinRes:')) {
+      const [, slot1, slot2, slot3, updatedCredits] = message.split(':');
+      setSlots([slot1, slot2, slot3]);
+      setCredits(parseInt(updatedCredits));
+
+      finalSlotYRef.current = options[parseInt(slot2, 10)];
+      finalSlotZRef.current = options[parseInt(slot3, 10)];
+      
+      startSpinningSlot1(parseInt(slot1, 10));
+
+      // Check if the user has won and update the state
+      const hasUserWon = slot1 === slot2 && slot2 === slot3;
+      setHasWon(hasUserWon);
+    } else if (message.startsWith('cashOut:')) {
+      alert(`You cashed out with ${message.split(':')[1]} credits!`);
+    }
+  };
+
+  const updateSlot = (index, newValue) => {
+    setSlots(prevSlots => {
+      const updatedSlots = [...prevSlots];
+      updatedSlots[index] = newValue;
+      return updatedSlots;
+    });
+  };
+
+  const rollSlots = () => {
+    if (credits <= 0 || isSpinning) return;
+    setHasWon(false); // Reset the win state when rolling
+    startSpinning23();
+    ws.send(`roll:${sessionId}`);
+  };
+
+  const cashOut = () => {
+    ws.send(`cashout:${sessionId}`);
+    setHasWon(false); // Hide the button after cashing out
+    setIsSpinning(true)
+  };
+
+  const startSpinningSlot1 = (slot1Value) => {
+    let currentIndex = 0;
+    const block1Interval = setInterval(() => {
+      updateSlot(0, options[currentIndex]);
+      currentIndex = (currentIndex + 1) % options.length;
+    }, 100);
+
+    setTimeout(() => {
+      clearInterval(block1Interval);
+      updateSlot(0, options[slot1Value]);
+    }, 1000);
+  };
+
+  const startSpinning23 = () => {
+    setIsSpinning(true);
+
+    let currentIndex2 = 0;
+    const block2Interval = setInterval(() => {
+      updateSlot(1, options[currentIndex2]);
+      currentIndex2 = (currentIndex2 + 1) % options.length;
+    }, 100);
+
+    setTimeout(() => {
+      clearInterval(block2Interval);
+      updateSlot(1, finalSlotYRef.current);
+    }, 2000);
+
+    let currentIndex3 = 0;
+    const block3Interval = setInterval(() => {
+      updateSlot(2, options[currentIndex3]);
+      currentIndex3 = (currentIndex3 + 1) % options.length;
+    }, 100);
+
+    setTimeout(() => {
+      clearInterval(block3Interval);
+      setIsSpinning(false);
+      updateSlot(2, finalSlotZRef.current);
+    }, 3000);
+  };
+
+  return (
+    <div style={{ textAlign: 'center', padding: '50px' }}>
+      <table style={{ margin: '0 auto', border: '1px solid black' }}>
+        <tbody>
+          <tr>
+            <td className="block">{slots[0]}</td>
+            <td className="block">{slots[1]}</td>
+            <td className="block">{slots[2]}</td>
+          </tr>
+        </tbody>
+      </table>
+      <button onClick={rollSlots} disabled={isSpinning || credits <= 0}
+        style={{ marginTop: '20px', padding: '10px 20px' }}>
+        Play!
+      </button>
+      {hasWon && credits > 0 && (
+        <button onClick={cashOut} style={{ marginTop: '20px', padding: '10px 20px' }}>
+          Cash Out
+        </button>
+      )}
+      <h1>Credits: {credits}</h1>
+    </div>
+  );
+};
+
+export default App;
+
+
+
+
+
+/*
+import React, { useState, useEffect, useRef } from 'react';
+import './SlotTable.css';
+
+const App = () => {
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
+  const [credits, setCredits] = useState(10);
+  const [slots, setSlots] = useState(['X', 'X', 'X']);
+  const [ws, setWs] = useState(null);
   const options = ['C', 'L', 'O', 'W'];
 
   // Refs to hold final slot values
@@ -125,7 +270,7 @@ const App = () => {
 };
 
 export default App;
-
+*/
 
 
 

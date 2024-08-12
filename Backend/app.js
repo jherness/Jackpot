@@ -7,13 +7,14 @@ const wss = new WebSocket.Server({ port: 8080 });
 console.log('WebSocket server is running on ws://localhost:8080');
 
 const sessions = {}; // Store sessions by session ID
+const userAccounts = {}; // Store user accounts by session ID
 const options = ['C', 'L', 'O', 'W'];
 
 // Handle WebSocket connections
 wss.on('connection', (ws) => {
   console.log('A new client connected');
   const sessionId = startSession();
-  ws.send(`session:${sessionId}:10`);// Send session ID and starting credits
+  ws.send(`session:${sessionId}:10`); // Send session ID and starting credits
 
   ws.on('message', (data) => {
     const message = data.toString();
@@ -34,8 +35,9 @@ wss.on('connection', (ws) => {
 
 // Start a new session
 const startSession = () => {
-  const sessionId = v4()
+  const sessionId = v4();
   sessions[sessionId] = { credits: 10 };
+  userAccounts[sessionId] = { totalCredits: 0 }; // Initialize user account
   return sessionId;
 };
 
@@ -59,7 +61,6 @@ const handleRoll = (ws, sessionId) => {
 
   ws.send(`spinRes:${randomNums.join(':')}:${session.credits}`);
   console.log(`spinRes:${randomNums.join(':')}:${session.credits}`);
-
 };
 
 // Handle cash out request
@@ -68,8 +69,17 @@ const handleCashOut = (ws, sessionId) => {
   if (!session) return ws.send('error:Invalid session');
 
   const credits = session.credits;
+
+  // Transfer credits to the user's account
+  userAccounts[sessionId].totalCredits += credits;
+
+  // Remove session data
   delete sessions[sessionId];
+
+  // Send cash out response
   ws.send(`cashOut:${credits}`);
+
+  console.log(`Cash out successful. Credits moved to user account: ${credits}`);
 };
 
 // Determine if a reroll should happen based on tokens
@@ -106,6 +116,7 @@ const genRandNumbers = () => {
 };
 
 module.exports = app;
+
 
 
 
